@@ -52,6 +52,11 @@ return {
             { "<leader>tt", desc = "Toggle terminal" },
             { "<leader>td", desc = "Terminal bottom" },
             { "<leader>tf", desc = "Terminal float" },
+
+            -- Комментарии (подсказка, сами биндинги от Comment.nvim)
+            { "gc",         group = "comment (motion)" },
+            { "gcc",        desc = "Comment line" },
+            { "gbc",        desc = "Comment block" },
         })
     end,
 }
