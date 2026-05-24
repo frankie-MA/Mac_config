@@ -4,6 +4,7 @@ return {
         require("nvim-treesitter.install").install({
             "python", "markdown", "markdown_inline",
             "json", "jsonc", "lua", "bash",
+            "yaml", "dockerfile", "toml",
         })
     end,
     config = function()

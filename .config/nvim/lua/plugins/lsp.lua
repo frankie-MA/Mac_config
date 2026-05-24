@@ -43,6 +43,8 @@ return {
                     "jsonls",    -- JSON
                     "lua_ls",    -- Lua
                     "bashls",    -- Bash
+                    "yamlls",    -- YAML (docker-compose)
+                    "dockerls",  -- Dockerfile
                 },
                 automatic_installation = true,
                 -- handlers активируют каждый сервер через нативный vim.lsp.enable
