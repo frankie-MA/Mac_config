@@ -55,9 +55,9 @@ return {
 
             -- Claude AI
             { "<leader>a",  group = "claude AI" },
-            { "<leader>ac", desc = "Toggle Claude" },
-            { "<leader>as", desc = "Send selection to Claude", mode = "v" },
-            { "<leader>ar", desc = "Code review current file" },
+            { "<leader>ai", desc = "Toggle Claude" },
+            { "<leader>ae", desc = "Explain selection",        mode = "v" },
+            { "<leader>av", desc = "Review current file" },
 
             -- Комментарии (подсказка, сами биндинги от Comment.nvim)
             { "gc",         group = "comment (motion)" },
