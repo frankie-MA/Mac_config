@@ -8,8 +8,8 @@ if status is-interactive
     # SSH-ключ в агент (macOS Keychain хранит passphrase)
     ssh-add --apple-use-keychain ~/.ssh/id_ed25519 2>/dev/null
 
-    # GitHub token для MCP сервера (берём из gh CLI)
-    set -x GITHUB_TOKEN (gh auth token 2>/dev/null)
+    # GitHub token для MCP сервера (полный путь — gh может быть ещё не в PATH)
+    set -x GITHUB_TOKEN (/opt/homebrew/bin/gh auth token 2>/dev/null)
 end
 
 starship init fish | source
