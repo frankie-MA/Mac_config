@@ -53,6 +53,12 @@ return {
             { "<leader>td", desc = "Terminal bottom" },
             { "<leader>tf", desc = "Terminal float" },
 
+            -- Claude AI
+            { "<leader>a",  group = "claude AI" },
+            { "<leader>ac", desc = "Toggle Claude" },
+            { "<leader>as", desc = "Send selection to Claude", mode = "v" },
+            { "<leader>ar", desc = "Code review current file" },
+
             -- Комментарии (подсказка, сами биндинги от Comment.nvim)
             { "gc",         group = "comment (motion)" },
             { "gcc",        desc = "Comment line" },
