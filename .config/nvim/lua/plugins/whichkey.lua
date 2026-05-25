@@ -22,6 +22,12 @@ return {
             -- Форматирование
             { "<leader>fm", desc = "Format file" },
 
+            -- Буфер обмена
+            { "<leader>y",  desc = "Copy to clipboard",      mode = { "n", "v" } },
+            { "<leader>Y",  desc = "Copy line to clipboard" },
+            { "<leader>x",  desc = "Cut to clipboard",       mode = { "n", "v" } },
+            { "<leader>P",  desc = "Paste from clipboard",   mode = { "n", "v" } },
+
             -- LSP
             { "<leader>r",  group = "rename" },
             { "<leader>rn", desc = "Rename symbol" },
@@ -51,17 +57,31 @@ return {
             { "<leader>td", desc = "Terminal bottom" },
             { "<leader>tf", desc = "Terminal float" },
 
-            -- Code & Claude (оба под <leader>c)
+            -- Code & Claude
             { "<leader>c",  group = "code & claude" },
             { "<leader>ca", desc = "Code action" },
             { "<leader>cc", desc = "Toggle Claude" },
-            { "<leader>ce", desc = "Explain selection",  mode = "v" },
+            { "<leader>ce", desc = "Explain selection",      mode = "v" },
             { "<leader>cv", desc = "Review current file" },
 
-            -- Комментарии (подсказка, сами биндинги от Comment.nvim)
-            { "gc",         group = "comment (motion)" },
+            -- Комментарии
+            { "gc",         group = "comment" },
             { "gcc",        desc = "Comment line" },
             { "gbc",        desc = "Comment block" },
+
+            -- Навигация (LSP)
+            { "g",          group = "goto" },
+            { "gd",         desc = "Definition" },
+            { "gr",         desc = "References" },
+            { "K",          desc = "Hover docs" },
+
+            -- Навигация (hunks / diagnostics)
+            { "]",          group = "next" },
+            { "]d",         desc = "Next diagnostic" },
+            { "]h",         desc = "Next git hunk" },
+            { "[",          group = "prev" },
+            { "[d",         desc = "Prev diagnostic" },
+            { "[h",         desc = "Prev git hunk" },
         })
     end,
 }
