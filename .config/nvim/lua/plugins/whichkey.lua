@@ -25,8 +25,6 @@ return {
             -- LSP
             { "<leader>r",  group = "rename" },
             { "<leader>rn", desc = "Rename symbol" },
-            { "<leader>c",  group = "code" },
-            { "<leader>ca", desc = "Code action" },
             { "<leader>e",  desc = "Diagnostic float" },
 
             -- Git (gitsigns)
@@ -53,11 +51,12 @@ return {
             { "<leader>td", desc = "Terminal bottom" },
             { "<leader>tf", desc = "Terminal float" },
 
-            -- Claude AI
-            { "<leader>a",  group = "claude AI" },
-            { "<leader>ai", desc = "Toggle Claude" },
-            { "<leader>ae", desc = "Explain selection",        mode = "v" },
-            { "<leader>av", desc = "Review current file" },
+            -- Code & Claude (оба под <leader>c)
+            { "<leader>c",  group = "code & claude" },
+            { "<leader>ca", desc = "Code action" },
+            { "<leader>cc", desc = "Toggle Claude" },
+            { "<leader>ce", desc = "Explain selection",  mode = "v" },
+            { "<leader>cv", desc = "Review current file" },
 
             -- Комментарии (подсказка, сами биндинги от Comment.nvim)
             { "gc",         group = "comment (motion)" },
