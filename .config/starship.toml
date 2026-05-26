@@ -1,0 +1,102 @@
+"$schema" = 'https://starship.rs/config-schema.json'
+
+add_newline = true
+
+# Порядок модулей в промпте
+format = """
+$directory\
+$git_branch\
+$git_status\
+$python\
+$docker_context\
+$cmd_duration\
+$line_break\
+$status\
+$character"""
+
+# ──────────────────────────────────────────────
+# Директория
+# ──────────────────────────────────────────────
+[directory]
+truncation_length = 4
+truncate_to_repo = true
+style = "bold cyan"
+format = "[$path]($style)[$read_only]($read_only_style) "
+
+# ──────────────────────────────────────────────
+# Git
+# ──────────────────────────────────────────────
+[git_branch]
+symbol = " "
+style = "bold purple"
+format = "on [$symbol$branch]($style) "
+
+[git_status]
+format = '([\[$all_status$ahead_behind\]]($style) )'
+style = "bold yellow"
+conflicted = "⚡"
+ahead = "⇡${count}"
+behind = "⇣${count}"
+diverged = "⇕⇡${ahead_count}⇣${behind_count}"
+untracked = "?"
+stashed = "$"
+modified = "!"
+staged = "+"
+renamed = "»"
+deleted = "✘"
+
+# ──────────────────────────────────────────────
+# Python / uv
+# ──────────────────────────────────────────────
+[python]
+symbol = " "
+format = 'via [${symbol}${pyenv_prefix}(${version} )(\($virtualenv\) )]($style)'
+style = "bold yellow"
+detect_files = ["pyproject.toml", "requirements.txt", ".python-version", "uv.lock"]
+detect_extensions = ["py"]
+python_binary = ["uv run python", "python3", "python"]
+
+# ──────────────────────────────────────────────
+# Docker (показывать только рядом с docker-compose.yml)
+# ──────────────────────────────────────────────
+[docker_context]
+symbol = " "
+style = "bold blue"
+format = "via [$symbol$context]($style) "
+only_with_files = true
+
+# ──────────────────────────────────────────────
+# Длительность команды (если > 2 сек)
+# ──────────────────────────────────────────────
+[cmd_duration]
+min_time = 2_000
+format = "took [$duration]($style) "
+style = "bold yellow"
+
+# ──────────────────────────────────────────────
+# Код ошибки если команда упала
+# ──────────────────────────────────────────────
+[status]
+disabled = false
+format = '[$symbol$status]($style) '
+symbol = "✗ "
+style = "bold red"
+
+# ──────────────────────────────────────────────
+# Символ промпта
+# ──────────────────────────────────────────────
+[character]
+success_symbol = "[➜](bold green)"
+error_symbol = "[➜](bold red)"
+
+# ──────────────────────────────────────────────
+# Отключено (шум без пользы)
+# ──────────────────────────────────────────────
+[package]
+disabled = true
+
+[nodejs]
+disabled = true
+
+[lua]
+disabled = true
