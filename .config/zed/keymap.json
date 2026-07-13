@@ -1,0 +1,66 @@
+[
+  {
+    "context": "Workspace",
+    "bindings": {
+      // Сплиты как в Kitty
+      "ctrl-enter": "pane::SplitDown",
+      "ctrl-\\": "pane::SplitRight",
+
+      // Навигация между панелями в Vim-стиле
+      "ctrl-h": "workspace::ActivatePaneLeft",
+      "ctrl-j": "workspace::ActivatePaneDown",
+      "ctrl-k": "workspace::ActivatePaneUp",
+      "ctrl-l": "workspace::ActivatePaneRight",
+
+      // Перемещение панелей
+      "ctrl-shift-h": "workspace::MovePaneLeft",
+      "ctrl-shift-j": "workspace::MovePaneDown",
+      "ctrl-shift-k": "workspace::MovePaneUp",
+      "ctrl-shift-l": "workspace::MovePaneRight",
+
+      // Соседние вкладки
+      "ctrl-shift-[": "pane::ActivatePreviousItem",
+      "ctrl-shift-]": "pane::ActivateNextItem",
+
+      // Развернуть активную панель
+      "super-enter": "workspace::ToggleZoom"
+    }
+  },
+  {
+    "context": "vim_mode == insert",
+    "bindings": {
+      // Быстрый выход из режима вставки
+      "j k": "vim::NormalBefore"
+    }
+  },
+  {
+    "context": "vim_mode == normal && !menu",
+    "bindings": {
+      // Закрыть текущую вкладку
+      "ctrl-w": "pane::CloseActiveItem"
+    }
+  },
+  {
+    "context": "Editor && mode == full",
+    "bindings": {
+      // Переопределяет встроенный вызов Inline Assistant в редакторе.
+      "ctrl-shift-enter": "workspace::NewCenterTerminal"
+    }
+  },
+  {
+    "context": "Terminal",
+    "bindings": {
+      // Возвращаем Ctrl-комбинации терминалу для shell, Vim и TUI.
+      "ctrl-h": ["terminal::SendKeystroke", "ctrl-h"],
+      "ctrl-j": ["terminal::SendKeystroke", "ctrl-j"],
+      "ctrl-k": ["terminal::SendKeystroke", "ctrl-k"],
+      "ctrl-l": ["terminal::SendKeystroke", "ctrl-l"],
+      "ctrl-w": ["terminal::SendKeystroke", "ctrl-w"],
+      "ctrl-\\": ["terminal::SendKeystroke", "ctrl-\\"],
+
+      // Эти две команды Zed доступны и из терминальной вкладки.
+      "ctrl-shift-enter": "workspace::NewCenterTerminal",
+      "super-enter": "workspace::ToggleZoom"
+    }
+  }
+]
