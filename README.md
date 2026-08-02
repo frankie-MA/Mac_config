@@ -15,7 +15,7 @@
 ### 2. Базовые инструменты
 
 ```bash
-brew install fish kitty neovim starship zoxide lazygit lua node gh tree-sitter stylua
+brew install fish kitty neovim starship zoxide lazygit atuin bat eza fzf mise lua node gh tree-sitter stylua
 ```
 
 ### 3. uv (менеджер Python-окружений)
@@ -92,6 +92,12 @@ cat ~/.ssh/id_ed25519.pub  # добавить на github.com/settings/keys
 - скачает все плагины
 - mason установит LSP серверы (pyright, lua_ls, bashls, yamlls, dockerls и др.)
 
+### 11. Установить темы Kitty
+
+```bash
+git clone https://github.com/kovidgoyal/kitty-themes.git ~/.config/kitty/kitty-themes
+```
+
 ---
 
 ## Ежедневная работа с конфигами
@@ -112,9 +118,12 @@ home push                             # отправить на GitHub
 ```
 ~/.config/
 ├── kitty/
-│   └── kitty.conf        # терминал (macOS, notch, catppuccin)
+│   ├── kitty.conf        # общие настройки терминала
+│   ├── macos.conf        # настройки macOS
+│   ├── linux.conf        # настройки Linux
+│   └── theme.conf        # выбранная тема из kitty-themes
 ├── fish/
-│   └── config.fish       # shell, PATH, алиасы, GITHUB_TOKEN
+│   └── config.fish       # shell, PATH и алиасы
 ├── nvim/
 │   ├── init.lua           # точка входа, lazy.nvim bootstrap
 │   └── lua/
