@@ -60,7 +60,7 @@ chsh -s /opt/homebrew/bin/fish
 ### 8. Клонировать репо с конфигами
 
 ```bash
-git clone --bare git@github.com:frankie-MA/Mac_config.git ~/.cfg
+git clone --bare git@github.com:frankie-MA/config.git ~/.cfg
 
 # Применить конфиги
 git --work-tree=$HOME --git-dir=$HOME/.cfg checkout
