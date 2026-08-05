@@ -1,9 +1,41 @@
 local bottom_terminal
 local bottom_lazygit
 local active_bottom_panel
+local bottom_panel_height = 15
+local bottom_panel_maximized = false
+
+local function resize_bottom_panel(height)
+    if not active_bottom_panel or not active_bottom_panel:is_open() then
+        return false
+    end
+
+    local win = active_bottom_panel.window
+    if not win or not vim.api.nvim_win_is_valid(win) then
+        return false
+    end
+
+    vim.api.nvim_win_set_height(win, height)
+    return true
+end
+
+local function toggle_bottom_panel_maximized()
+    if not active_bottom_panel or not active_bottom_panel:is_open() then
+        vim.notify("Bottom panel is not open", vim.log.levels.WARN)
+        return
+    end
+
+    local height = bottom_panel_maximized and bottom_panel_height or vim.o.lines
+    if resize_bottom_panel(height) then
+        bottom_panel_maximized = not bottom_panel_maximized
+    end
+end
 
 local function toggle_bottom_panel(panel)
     if active_bottom_panel and active_bottom_panel:is_open() then
+        if bottom_panel_maximized then
+            resize_bottom_panel(bottom_panel_height)
+            bottom_panel_maximized = false
+        end
         active_bottom_panel:close()
         if active_bottom_panel == panel then
             active_bottom_panel = nil
@@ -13,6 +45,7 @@ local function toggle_bottom_panel(panel)
 
     panel:open()
     active_bottom_panel = panel
+    bottom_panel_maximized = false
 end
 
 return {
@@ -23,6 +56,8 @@ return {
             desc = "Toggle bottom terminal", mode = { "n", "t" } },
         { "<leader>lg", function() toggle_bottom_panel(bottom_lazygit) end,
             desc = "Toggle bottom LazyGit", mode = { "n", "t" } },
+        { "<leader>tm", toggle_bottom_panel_maximized,
+            desc = "Maximize bottom panel", mode = { "n", "t" } },
     },
     config = function()
         require("toggleterm").setup({
@@ -41,7 +76,7 @@ return {
                 close_on_exit = true,
                 on_open = function(term)
                     vim.wo.winfixheight = true
-                    vim.api.nvim_win_set_height(0, 15)
+                    vim.api.nvim_win_set_height(0, bottom_panel_height)
                     vim.cmd("startinsert!")
                     vim.keymap.set("t", "<C-Space>", [[<C-\><C-n>]],
                         { buffer = term.bufnr, desc = "Terminal normal mode" })

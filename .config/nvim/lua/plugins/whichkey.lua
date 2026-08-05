@@ -65,6 +65,7 @@ return {
             -- Терминал
             { "<leader>t",  group = "terminal" },
             { "<leader>tt", desc = "Toggle bottom terminal", mode = { "n", "t" } },
+            { "<leader>tm", desc = "Maximize bottom panel", mode = { "n", "t" } },
 
             -- Code & Claude
             { "<leader>c",  group = "code & claude" },
