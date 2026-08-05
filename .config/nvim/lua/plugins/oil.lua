@@ -84,6 +84,7 @@ return {
         { "<leader>pv", toggle_sidebar, desc = "Toggle Oil sidebar" },
     },
     opts = {
+        watch_for_changes = true,
         view_options = { show_hidden = true },
         float = { border = "rounded" },
         keymaps = {
