@@ -3,7 +3,7 @@ return {
     name = "catppuccin",
     priority = 1000, -- загружать раньше всех плагинов
     opts = {
-        flavour = "mocha",
+        flavour = require("theme-flavour"),
         integrations = {
             mason = true,
             which_key = true,
