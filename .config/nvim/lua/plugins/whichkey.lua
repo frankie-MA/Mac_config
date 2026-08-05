@@ -28,6 +28,17 @@ return {
             { "<leader>x",  desc = "Cut to clipboard",       mode = { "n", "v" } },
             { "<leader>P",  desc = "Paste from clipboard",   mode = { "n", "v" } },
 
+            -- AI prompts
+            { "<leader>a",  group = "AI prompt" },
+            { "<leader>ap", desc = "Open prompt scratch buffer" },
+
+            -- Сохранение и закрытие
+            { "<leader>w",  desc = "Save file" },
+            { "<leader>q",  desc = "Close window" },
+            { "<leader>Q",  desc = "Quit Neovim" },
+            { "<leader>b",  group = "buffers" },
+            { "<leader>bd", desc = "Delete buffer, keep layout" },
+
             -- LSP
             { "<leader>r",  group = "rename" },
             { "<leader>rn", desc = "Rename symbol" },
