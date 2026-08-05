@@ -44,7 +44,7 @@ return {
 
             -- LazyGit
             { "<leader>l",  group = "lazygit" },
-            { "<leader>lg", desc = "Open LazyGit" },
+            { "<leader>lg", desc = "Toggle bottom LazyGit", mode = { "n", "t" } },
 
             -- Venv / uv
             { "<leader>v",  group = "venv (uv)" },
@@ -53,9 +53,7 @@ return {
 
             -- Терминал
             { "<leader>t",  group = "terminal" },
-            { "<leader>tt", desc = "Toggle terminal" },
-            { "<leader>td", desc = "Terminal bottom" },
-            { "<leader>tf", desc = "Terminal float" },
+            { "<leader>tt", desc = "Toggle bottom terminal", mode = { "n", "t" } },
 
             -- Code & Claude
             { "<leader>c",  group = "code & claude" },
