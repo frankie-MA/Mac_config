@@ -9,6 +9,16 @@ map("n",          "<leader>Y", '"+Y',  { desc = "Copy line to clipboard" })
 map({ "n", "v" }, "<leader>x", '"+d',  { desc = "Cut to clipboard" })
 map({ "n", "v" }, "<leader>P", '"+p',  { desc = "Paste from clipboard" })
 
+local function format_file_path(dir, name, kind)
+    local absolute = vim.fs.normalize(vim.fs.joinpath(dir, name))
+    if kind == "name" then
+        return name
+    elseif kind == "relative" then
+        return vim.fn.fnamemodify(absolute, ":.")
+    end
+    return absolute
+end
+
 local function current_file_path(kind)
     if vim.bo.filetype == "oil" then
         local oil = require("oil")
@@ -18,13 +28,7 @@ local function current_file_path(kind)
             return nil
         end
 
-        local absolute = vim.fs.normalize(vim.fs.joinpath(dir, entry.name))
-        if kind == "name" then
-            return entry.name
-        elseif kind == "relative" then
-            return vim.fn.fnamemodify(absolute, ":.")
-        end
-        return absolute
+        return format_file_path(dir, entry.name, kind)
     end
 
     local modifiers = {
@@ -35,22 +39,53 @@ local function current_file_path(kind)
     return vim.fn.expand("%" .. modifiers[kind])
 end
 
+local function selected_oil_paths(kind)
+    local oil = require("oil")
+    local buf = vim.api.nvim_get_current_buf()
+    local dir = oil.get_current_dir(buf)
+    if not dir then
+        return {}
+    end
+
+    local first = math.min(vim.fn.line("v"), vim.fn.line("."))
+    local last = math.max(vim.fn.line("v"), vim.fn.line("."))
+    local paths = {}
+    for lnum = first, last do
+        local entry = oil.get_entry_on_line(buf, lnum)
+        if entry then
+            table.insert(paths, format_file_path(dir, entry.name, kind))
+        end
+    end
+    return paths
+end
+
 local function copy_file_path(kind, label)
     return function()
-        local path = current_file_path(kind)
-        if not path or path == "" then
+        local paths
+        if vim.bo.filetype == "oil" and vim.fn.mode():match("^[vV\22]") then
+            paths = selected_oil_paths(kind)
+        else
+            local path = current_file_path(kind)
+            paths = path and path ~= "" and { path } or {}
+        end
+
+        if #paths == 0 then
             vim.notify("No file under cursor", vim.log.levels.WARN)
             return
         end
 
-        vim.fn.setreg("+", path)
-        vim.notify(label .. ": " .. path)
+        vim.fn.setreg("+", table.concat(paths, "\n"))
+        if #paths == 1 then
+            vim.notify(label .. ": " .. paths[1])
+        else
+            vim.notify(string.format("%s: %d paths", label, #paths))
+        end
     end
 end
 
-map("n", "<leader>yp", copy_file_path("relative", "Copied relative path"), { desc = "Copy relative file path" })
-map("n", "<leader>yP", copy_file_path("absolute", "Copied absolute path"), { desc = "Copy absolute file path" })
-map("n", "<leader>yf", copy_file_path("name",     "Copied file name"),     { desc = "Copy file name" })
+map({ "n", "v" }, "<leader>yp", copy_file_path("relative", "Copied relative path"), { desc = "Copy relative file path(s)" })
+map({ "n", "v" }, "<leader>yP", copy_file_path("absolute", "Copied absolute path"), { desc = "Copy absolute file path(s)" })
+map({ "n", "v" }, "<leader>yf", copy_file_path("name",     "Copied file name"),     { desc = "Copy file name(s)" })
 
 -- Временный Markdown-буфер для составления промтов
 map("n", "<leader>ap", function()
