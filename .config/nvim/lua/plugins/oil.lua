@@ -49,12 +49,6 @@ end
 local function select_from_sidebar()
     local oil = require("oil")
     local win = vim.api.nvim_get_current_win()
-    local ok, sidebar = pcall(is_sidebar, win)
-    if not ok or not sidebar then
-        oil.select()
-        return
-    end
-
     local entry = oil.get_cursor_entry()
     local dir = oil.get_current_dir()
     if not entry or not dir then
@@ -68,13 +62,28 @@ local function select_from_sidebar()
         return
     end
 
-    for _, target in ipairs(vim.api.nvim_tabpage_list_wins(0)) do
-        if target ~= win then
+    oil.select({
+        handle_buffer_callback = function(buf)
+            local target
+            for _, candidate in ipairs(vim.api.nvim_tabpage_list_wins(0)) do
+                local candidate_buf = vim.api.nvim_win_get_buf(candidate)
+                if candidate ~= win and vim.bo[candidate_buf].buftype == "" then
+                    target = candidate
+                    break
+                end
+            end
+
+            if not target then
+                vim.api.nvim_set_current_win(win)
+                vim.cmd("rightbelow vnew")
+                target = vim.api.nvim_get_current_win()
+            end
+
+            configure_sidebar(win)
             vim.api.nvim_set_current_win(target)
-            vim.cmd.edit(vim.fn.fnameescape(path))
-            return
-        end
-    end
+            vim.api.nvim_win_set_buf(target, buf)
+        end,
+    })
 end
 
 return {
