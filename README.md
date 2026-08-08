@@ -24,11 +24,13 @@
 home status                           # посмотреть изменения
 home add .config/kitty/kitty.conf     # добавить файл
 home commit -m "update kitty"         # закоммитить
+check-config                          # быстрые syntax/runtime проверки
 sync-config                           # ff-only pull, push origin, push SMB, doctor
 config-doctor                         # проверить fish/nvim/starship/kitty/repo mirror
 ```
 
 `lazy-lock.json` не трекается: каждая ОС держит свои версии плагинов локально.
+Правила repo: `docs/policy.md`.
 
 ---
 

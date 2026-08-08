@@ -23,6 +23,7 @@ need git
 need fish
 need nvim
 need starship
+need findmnt
 
 fish -n "$HOME/.config/fish/config.fish"
 ok "fish syntax"
@@ -52,7 +53,7 @@ if [ -n "$origin_ref" ] && [ "$head_ref" != "$origin_ref" ]; then
 fi
 ok "origin/main matches HEAD"
 
-if [ -d "$smb_remote" ]; then
+if findmnt -T "$smb_remote" >/dev/null 2>&1 && [ -d "$smb_remote" ]; then
     smb_ref=$(git -C "$smb_remote" rev-parse refs/heads/main)
     if [ "$head_ref" != "$smb_ref" ]; then
         fail "HEAD differs from SMB mirror"

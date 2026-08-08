@@ -1,0 +1,27 @@
+#!/bin/sh
+
+set -eu
+
+repo="${1:-$HOME}"
+
+need() {
+    command -v "$1" >/dev/null 2>&1 || {
+        printf 'missing command: %s\n' "$1" >&2
+        exit 1
+    }
+}
+
+need fish
+need nvim
+need starship
+
+for file in "$repo"/.local/bin/* "$repo"/install/*.sh; do
+    [ -f "$file" ] || continue
+    sh -n "$file"
+done
+
+fish -n "$repo/.config/fish/config.fish" "$repo"/.config/fish/conf.d/*.fish
+nvim --headless '+qa' >/dev/null 2>&1
+starship print-config >/dev/null
+
+printf 'ok: config checks passed\n'
