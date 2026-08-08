@@ -46,8 +46,8 @@ config-doctor                         # проверить fish/nvim/starship/ki
 
 ### Автомонтирование SMB на macOS
 
-LaunchAgent `com.mafrankie.config-smb` раз в минуту проверяет `/Volumes/homes`
-и при необходимости монтирует
+LaunchAgent `com.mafrankie.config-smb` один раз при входе в macOS проверяет
+`/Volumes/homes` и при необходимости монтирует
 `smb://frankie@kateCloud._smb._tcp.local/homes`. Пароль в dotfiles не хранится:
 macOS использует запись из Keychain. Для первичной установки сохрани пароль при
 ручном подключении в Finder, затем один раз загрузи агент:
@@ -56,6 +56,9 @@ macOS использует запись из Keychain. Для первичной
 launchctl bootstrap "gui/$(id -u)" ~/Library/LaunchAgents/com.mafrankie.config-smb.plist
 launchctl kickstart -k "gui/$(id -u)/com.mafrankie.config-smb"
 ```
+
+Периодического опроса нет, поэтому агент не будит Mac в фоне. Если NAS был
+недоступен во время входа, позже запусти `mount-config-smb` вручную.
 
 Адрес и точку монтирования можно переопределить переменными
 `SMB_CONFIG_URL` и `SMB_CONFIG_MOUNT_POINT` при ручном запуске скрипта.
