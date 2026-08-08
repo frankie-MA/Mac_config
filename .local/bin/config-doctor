@@ -1,0 +1,63 @@
+#!/bin/sh
+
+set -eu
+
+home_git="${HOME_GIT_DIR:-$HOME/.cfg}"
+home_work_tree="${HOME_WORK_TREE:-$HOME}"
+smb_remote="${SMB_CONFIG_REMOTE:-/mnt/katecloud/homes/repo/git/config.git}"
+
+ok() {
+    printf 'ok: %s\n' "$1"
+}
+
+fail() {
+    printf 'fail: %s\n' "$1" >&2
+    exit 1
+}
+
+need() {
+    command -v "$1" >/dev/null 2>&1 || fail "missing command: $1"
+}
+
+need git
+need fish
+need nvim
+need starship
+
+fish -n "$HOME/.config/fish/config.fish"
+ok "fish syntax"
+
+nvim --headless '+qa' >/dev/null 2>&1
+ok "nvim startup"
+
+starship print-config >/dev/null
+ok "starship config"
+
+test -f "$HOME/.config/kitty/kitty.conf" || fail "missing kitty.conf"
+test -f "$HOME/.config/kitty/linux.conf" || fail "missing kitty linux.conf"
+test -f "$HOME/.config/kitty/macos.conf" || fail "missing kitty macos.conf"
+test -f "$HOME/.config/kitty/catppuccin-current.conf" || fail "missing kitty catppuccin-current.conf"
+test -x "$HOME/.config/kitty/switch-catppuccin" || fail "switch-catppuccin is not executable"
+ok "kitty files"
+
+test -d "$home_git" || fail "missing bare repo: $home_git"
+git --git-dir="$home_git" --work-tree="$home_work_tree" diff --quiet || fail "home work tree has unstaged changes"
+git --git-dir="$home_git" --work-tree="$home_work_tree" diff --cached --quiet || fail "home index has staged changes"
+ok "home work tree clean"
+
+head_ref=$(git --git-dir="$home_git" rev-parse HEAD)
+origin_ref=$(git --git-dir="$home_git" rev-parse refs/remotes/origin/main 2>/dev/null || true)
+if [ -n "$origin_ref" ] && [ "$head_ref" != "$origin_ref" ]; then
+    fail "HEAD differs from origin/main"
+fi
+ok "origin/main matches HEAD"
+
+if [ -d "$smb_remote" ]; then
+    smb_ref=$(git -C "$smb_remote" rev-parse refs/heads/main)
+    if [ "$head_ref" != "$smb_ref" ]; then
+        fail "HEAD differs from SMB mirror"
+    fi
+    ok "SMB mirror matches HEAD"
+else
+    printf 'skip: SMB mirror not mounted: %s\n' "$smb_remote"
+fi
