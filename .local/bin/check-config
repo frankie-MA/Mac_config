@@ -15,7 +15,23 @@ need fish
 need nvim
 need starship
 
-for file in "$repo"/.local/bin/* "$repo"/install/*.sh; do
+check_posix_shell() {
+    file="$1"
+    prefix="$(LC_ALL=C dd if="$file" bs=2 count=1 2>/dev/null)"
+    [ "$prefix" = '#!' ] || return 0
+
+    IFS= read -r shebang < "$file" || true
+    case "$shebang" in
+        '#!/bin/sh'|'#!/usr/bin/sh'|'#!/usr/bin/env sh') sh -n "$file" ;;
+    esac
+}
+
+for file in "$repo"/.local/bin/*; do
+    [ -f "$file" ] || continue
+    check_posix_shell "$file"
+done
+
+for file in "$repo"/install/*.sh; do
     [ -f "$file" ] || continue
     sh -n "$file"
 done
