@@ -4,6 +4,14 @@ local active_bottom_panel
 local bottom_panel_height = 15
 local bottom_panel_maximized = false
 
+local function preferred_shell()
+    for _, shell in ipairs({ vim.env.SHELL, "/usr/bin/fish", "/opt/homebrew/bin/fish" }) do
+        if shell and shell ~= "" and vim.fn.executable(shell) == 1 then
+            return shell
+        end
+    end
+end
+
 local function resize_bottom_panel(height)
     if not active_bottom_panel or not active_bottom_panel:is_open() then
         return false
@@ -65,7 +73,7 @@ return {
             size = 15,
             persist_size = true,
             start_in_insert = true,
-            shell = "/opt/homebrew/bin/fish",
+            shell = preferred_shell(),
         })
 
         local Terminal = require("toggleterm.terminal").Terminal

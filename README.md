@@ -1,42 +1,44 @@
-# Mac Config — Dotfiles
+# Config — Dotfiles
 
-Конфиги kitty, fish, nvim и Claude Code для macOS (Apple Silicon).
+Единые конфиги kitty, fish, nvim и starship для macOS и Linux.
+Различия по ОС вынесены в отдельные файлы или условные блоки.
 
 ---
 
 ## Восстановление на новой машине
 
-### 1. Homebrew
+### 1. Базовые инструменты
 
+macOS:
 ```bash
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-```
-
-### 2. Базовые инструменты
-
-```bash
 brew install fish kitty neovim starship zoxide lazygit atuin bat eza fzf mise lua node gh tree-sitter stylua
 ```
 
-### 3. uv (менеджер Python-окружений)
+Arch/Omarchy:
+```bash
+sudo pacman -S fish kitty neovim starship zoxide lazygit atuin bat eza fzf mise lua nodejs npm github-cli tree-sitter-cli stylua
+```
+
+### 2. uv (менеджер Python-окружений)
 
 ```bash
 curl -LsSf https://astral.sh/uv/install.sh | sh
 ```
 
-### 4. Python-инструменты
+### 3. Python-инструменты
 
 ```bash
 uv tool install ruff
 ```
 
-### 5. npm-инструменты
+### 4. npm-инструменты
 
 ```bash
 npm install -g prettier tree-sitter-cli
 ```
 
-### 6. MCP серверы для Claude Code
+### 5. MCP серверы для Claude Code
 
 ```bash
 npm install -g \
@@ -50,17 +52,26 @@ npm install -g \
 pip3 install mcp mcp-server-tree-sitter
 ```
 
-### 7. Установить fish как шелл по умолчанию
+### 6. Установить fish как шелл по умолчанию
 
+macOS:
 ```bash
 echo /opt/homebrew/bin/fish | sudo tee -a /etc/shells
 chsh -s /opt/homebrew/bin/fish
 ```
 
-### 8. Клонировать репо с конфигами
+Linux:
+```bash
+echo /usr/bin/fish | sudo tee -a /etc/shells
+chsh -s /usr/bin/fish
+```
+
+### 7. Клонировать bare repo с конфигами
 
 ```bash
 git clone --bare git@github.com:frankie-MA/config.git ~/.cfg
+git --git-dir=$HOME/.cfg config status.showUntrackedFiles no
+git --git-dir=$HOME/.cfg remote add smb /mnt/katecloud/homes/repo/git/config.git
 
 # Применить конфиги
 git --work-tree=$HOME --git-dir=$HOME/.cfg checkout
@@ -74,29 +85,30 @@ git --work-tree=$HOME --git-dir=$HOME/.cfg checkout 2>&1 \
 git --work-tree=$HOME --git-dir=$HOME/.cfg checkout
 ```
 
-### 9. Авторизация
+SMB mirror для копий repo:
+
+```bash
+home push origin main
+home push smb main
+```
+
+### 8. Авторизация
 
 ```bash
 # GitHub CLI
 gh auth login
 
 # SSH ключ (если нужен новый)
-ssh-keygen -t ed25519 -C "MAC"
+ssh-keygen -t ed25519 -C "$(hostname)"
 cat ~/.ssh/id_ed25519.pub  # добавить на github.com/settings/keys
 ```
 
-### 10. Запустить nvim
+### 9. Запустить nvim
 
 При первом запуске `nvim` автоматически:
 - установит lazy.nvim
 - скачает все плагины
 - mason установит LSP серверы (pyright, lua_ls, bashls, yamlls, dockerls и др.)
-
-### 11. Установить темы Kitty
-
-```bash
-git clone https://github.com/kovidgoyal/kitty-themes.git ~/.config/kitty/kitty-themes
-```
 
 ---
 
@@ -121,7 +133,9 @@ home push                             # отправить на GitHub
 │   ├── kitty.conf        # общие настройки терминала
 │   ├── macos.conf        # настройки macOS
 │   ├── linux.conf        # настройки Linux
-│   └── theme.conf        # выбранная тема из kitty-themes
+│   ├── catppuccin/       # темы Catppuccin
+│   ├── catppuccin-current.conf
+│   └── switch-catppuccin # переключатель темы Kitty + Neovim
 ├── fish/
 │   └── config.fish       # shell, PATH и алиасы
 ├── nvim/

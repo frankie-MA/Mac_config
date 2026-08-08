@@ -1,20 +1,23 @@
 if status is-interactive
-    # Homebrew в PATH на macOS
     if test (uname) = Darwin
         fish_add_path /opt/homebrew/bin /opt/homebrew/sbin
     end
 
     set -g fish_key_bindings fish_vi_key_bindings
 
-    # Управление дотфайлами через bare git repo
+    # Управление дотфайлами через bare git repo.
     if test -d "$HOME/.cfg"
         alias home 'git --work-tree=$HOME --git-dir=$HOME/.cfg'
         alias lgh 'lazygit --work-tree=$HOME --git-dir=$HOME/.cfg'
     end
 
-    alias lg lazygit
+    if test -d "$HOME/ghq/github.com/frankie-MA/config/.git"
+        alias lgc 'lazygit -p $HOME/ghq/github.com/frankie-MA/config'
+        alias lgconfig 'lazygit -p $HOME/ghq/github.com/frankie-MA/config'
+    end
 
-    # macOS Keychain хранит passphrase ключа
+    alias lg 'lazygit'
+
     if test (uname) = Darwin; and test -f "$HOME/.ssh/id_ed25519"
         ssh-add --apple-use-keychain "$HOME/.ssh/id_ed25519" 2>/dev/null
     end
