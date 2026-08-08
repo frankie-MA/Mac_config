@@ -6,6 +6,14 @@ home_git="${HOME_GIT_DIR:-$HOME/.cfg}"
 home_work_tree="${HOME_WORK_TREE:-$HOME}"
 smb_remote="${SMB_CONFIG_REMOTE:-/mnt/katecloud/homes/repo/git/config.git}"
 
+if [ -z "${SSH_AUTH_SOCK:-}" ]; then
+    runtime_dir="${XDG_RUNTIME_DIR:-/run/user/$(id -u)}"
+    if [ -S "$runtime_dir/gnupg/S.gpg-agent.ssh" ]; then
+        SSH_AUTH_SOCK="$runtime_dir/gnupg/S.gpg-agent.ssh"
+        export SSH_AUTH_SOCK
+    fi
+fi
+
 home() {
     git --git-dir="$home_git" --work-tree="$home_work_tree" "$@"
 }
