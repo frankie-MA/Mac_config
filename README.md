@@ -62,6 +62,9 @@ launchctl kickstart -k "gui/$(id -u)/com.mafrankie.config-smb"
 
 Адрес и точку монтирования можно переопределить переменными
 `SMB_CONFIG_URL` и `SMB_CONFIG_MOUNT_POINT` при ручном запуске скрипта.
+Скрипты синхронизации не проверяют имя ОС: они ищут реально смонтированный
+каталог среди `/Volumes/homes` и `/mnt/katecloud/homes`. Нестандартное зеркало
+можно задать через `SMB_CONFIG_REMOTE`.
 
 ### Правило для проверок
 

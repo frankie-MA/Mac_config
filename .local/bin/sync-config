@@ -4,7 +4,22 @@ set -eu
 
 home_git="${HOME_GIT_DIR:-$HOME/.cfg}"
 home_work_tree="${HOME_WORK_TREE:-$HOME}"
-smb_remote="${SMB_CONFIG_REMOTE:-/mnt/katecloud/homes/repo/git/config.git}"
+
+detect_smb_remote() {
+    if [ -n "${SMB_CONFIG_REMOTE:-}" ]; then
+        printf '%s\n' "$SMB_CONFIG_REMOTE"
+        return
+    fi
+
+    for mount_point in ${SMB_CONFIG_MOUNT_POINT:+"$SMB_CONFIG_MOUNT_POINT"} /Volumes/homes /mnt/katecloud/homes; do
+        if mount | grep -Fq " on $mount_point "; then
+            printf '%s/repo/git/config.git\n' "$mount_point"
+            return
+        fi
+    done
+}
+
+smb_remote="$(detect_smb_remote)"
 
 if [ -z "${SSH_AUTH_SOCK:-}" ]; then
     runtime_dir="${XDG_RUNTIME_DIR:-/run/user/$(id -u)}"
@@ -39,10 +54,10 @@ home fetch origin main
 home merge --ff-only origin/main
 home push origin main
 
-if [ -d "$smb_remote" ]; then
+if [ -n "$smb_remote" ] && [ -d "$smb_remote" ]; then
     home push "$smb_remote" main
 else
-    printf 'skip: SMB mirror not mounted: %s\n' "$smb_remote"
+    printf 'skip: SMB mirror not mounted or not configured\n'
 fi
 
 if command -v config-doctor >/dev/null 2>&1; then

@@ -5,13 +5,21 @@ set -eu
 home_git="${HOME_GIT_DIR:-$HOME/.cfg}"
 home_work_tree="${HOME_WORK_TREE:-$HOME}"
 
-case "$(uname -s)" in
-    Darwin) default_smb_mount="/Volumes/homes" ;;
-    *) default_smb_mount="/mnt/katecloud/homes" ;;
-esac
+detect_smb_remote() {
+    if [ -n "${SMB_CONFIG_REMOTE:-}" ]; then
+        printf '%s\n' "$SMB_CONFIG_REMOTE"
+        return
+    fi
 
-smb_mount="${SMB_CONFIG_MOUNT_POINT:-$default_smb_mount}"
-smb_remote="${SMB_CONFIG_REMOTE:-$smb_mount/repo/git/config.git}"
+    for mount_point in ${SMB_CONFIG_MOUNT_POINT:+"$SMB_CONFIG_MOUNT_POINT"} /Volumes/homes /mnt/katecloud/homes; do
+        if mount | grep -Fq " on $mount_point "; then
+            printf '%s/repo/git/config.git\n' "$mount_point"
+            return
+        fi
+    done
+}
+
+smb_remote="$(detect_smb_remote)"
 
 ok() {
     printf 'ok: %s\n' "$1"
@@ -30,16 +38,6 @@ need git
 need fish
 need nvim
 need starship
-
-smb_is_mounted() {
-    case "$(uname -s)" in
-        Darwin) /sbin/mount | grep -Fq " on $smb_mount (smbfs" ;;
-        *)
-            need findmnt
-            findmnt -T "$smb_remote" >/dev/null 2>&1
-            ;;
-    esac
-}
 
 fish -n "$HOME/.config/fish/config.fish"
 ok "fish syntax"
@@ -69,7 +67,7 @@ if [ -n "$origin_ref" ] && [ "$head_ref" != "$origin_ref" ]; then
 fi
 ok "origin/main matches HEAD"
 
-if smb_is_mounted && [ -d "$smb_remote" ]; then
+if [ -n "$smb_remote" ] && [ -d "$smb_remote" ]; then
     test -w "$smb_remote/objects" || fail "SMB mirror is not writable: $smb_remote"
     smb_ref=$(git -C "$smb_remote" rev-parse refs/heads/main)
     if [ "$head_ref" != "$smb_ref" ]; then
@@ -77,5 +75,5 @@ if smb_is_mounted && [ -d "$smb_remote" ]; then
     fi
     ok "SMB mirror matches HEAD"
 else
-    printf 'skip: SMB mirror not mounted: %s\n' "$smb_remote"
+    printf 'skip: SMB mirror not mounted or not configured\n'
 fi

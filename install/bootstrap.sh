@@ -4,8 +4,23 @@ set -eu
 
 repo_url="${CONFIG_REPO_URL:-git@github.com:frankie-MA/config.git}"
 home_git="${HOME_GIT_DIR:-$HOME/.cfg}"
-smb_remote="${SMB_CONFIG_REMOTE:-/mnt/katecloud/homes/repo/git/config.git}"
 install_packages=0
+
+detect_smb_remote() {
+    if [ -n "${SMB_CONFIG_REMOTE:-}" ]; then
+        printf '%s\n' "$SMB_CONFIG_REMOTE"
+        return
+    fi
+
+    for mount_point in ${SMB_CONFIG_MOUNT_POINT:+"$SMB_CONFIG_MOUNT_POINT"} /Volumes/homes /mnt/katecloud/homes; do
+        if mount | grep -Fq " on $mount_point "; then
+            printf '%s/repo/git/config.git\n' "$mount_point"
+            return
+        fi
+    done
+}
+
+smb_remote="$(detect_smb_remote)"
 
 usage() {
     printf 'usage: %s [--packages]\n' "$0"
@@ -71,7 +86,7 @@ checkout_dotfiles() {
     git --git-dir="$home_git" config status.showUntrackedFiles no
     git --git-dir="$home_git" config remote.origin.fetch '+refs/heads/*:refs/remotes/origin/*'
 
-    if [ -d "$smb_remote" ] && ! git --git-dir="$home_git" remote get-url smb >/dev/null 2>&1; then
+    if [ -n "$smb_remote" ] && [ -d "$smb_remote" ] && ! git --git-dir="$home_git" remote get-url smb >/dev/null 2>&1; then
         git --git-dir="$home_git" remote add smb "$smb_remote"
     fi
 
