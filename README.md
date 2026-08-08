@@ -7,7 +7,19 @@
 
 ## Bootstrap
 
-Новая машина описана в `docs/bootstrap.md`; автоматизация лежит в `install/bootstrap.sh`.
+Новая машина описана в `docs/bootstrap.md`. На свежей macOS начни с temporary clone:
+
+```bash
+git clone git@github.com:frankie-MA/config.git ~/config-bootstrap
+cd ~/config-bootstrap
+./install/bootstrap.sh --packages
+```
+
+После перезапуска shell проверь состояние:
+
+```bash
+config-doctor
+```
 
 При первом запуске `nvim` автоматически:
 - установит lazy.nvim

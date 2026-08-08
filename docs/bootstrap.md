@@ -25,11 +25,15 @@ chsh -s /usr/bin/fish
 
 ## Dotfiles
 
-Fast path:
+Fresh macOS/Linux path:
 
 ```bash
+git clone git@github.com:frankie-MA/config.git ~/config-bootstrap
+cd ~/config-bootstrap
 ./install/bootstrap.sh --packages
 ```
+
+This creates `~/.cfg`, checks out tracked dotfiles into `$HOME`, and sets fish as the login shell.
 
 Manual path:
 
@@ -37,8 +41,15 @@ Manual path:
 git clone --bare git@github.com:frankie-MA/config.git ~/.cfg
 git --git-dir=$HOME/.cfg config status.showUntrackedFiles no
 git --git-dir=$HOME/.cfg config remote.origin.fetch '+refs/heads/*:refs/remotes/origin/*'
-git --git-dir=$HOME/.cfg remote add smb /mnt/katecloud/homes/repo/git/config.git
+[ -d /mnt/katecloud/homes/repo/git/config.git ] && git --git-dir=$HOME/.cfg remote add smb /mnt/katecloud/homes/repo/git/config.git
 git --work-tree=$HOME --git-dir=$HOME/.cfg checkout
 ```
 
 If checkout reports conflicts, move the listed files to a backup directory and repeat checkout.
+
+After bootstrap, restart the shell and run:
+
+```bash
+config-doctor
+nvim
+```
