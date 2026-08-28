@@ -43,11 +43,11 @@ install_base_packages() {
             if ! command -v brew >/dev/null 2>&1; then
                 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
             fi
-            brew install fish kitty neovim starship zoxide lazygit atuin bat eza fzf mise lua node gh tree-sitter stylua
+            brew install fish kitty neovim starship zoxide lazygit atuin bat eza fzf mise lua node gh tree-sitter stylua jq
             ;;
         Linux)
             if command -v pacman >/dev/null 2>&1; then
-                sudo pacman -S --needed fish kitty neovim starship zoxide lazygit atuin bat eza fzf mise lua nodejs npm github-cli tree-sitter-cli stylua
+                sudo pacman -S --needed fish kitty neovim starship zoxide lazygit atuin bat eza fzf mise lua nodejs npm github-cli tree-sitter-cli stylua jq
             else
                 printf 'Unsupported Linux package manager. Install packages manually.\n' >&2
                 exit 1
@@ -140,6 +140,14 @@ fi
 
 checkout_dotfiles
 ensure_fish_shell
+
+if [ -x "$HOME/.local/bin/setup-claude-mcp" ]; then
+    if command -v jq >/dev/null 2>&1; then
+        "$HOME/.local/bin/setup-claude-mcp"
+    else
+        printf 'skip: jq not installed, run setup-claude-mcp manually later\n'
+    fi
+fi
 
 if command -v config-doctor >/dev/null 2>&1; then
     config-doctor

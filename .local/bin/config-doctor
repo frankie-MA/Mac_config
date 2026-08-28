@@ -77,3 +77,14 @@ if [ -n "$smb_remote" ] && [ -d "$smb_remote" ]; then
 else
     printf 'skip: SMB mirror not mounted or not configured\n'
 fi
+
+claude_json="${CLAUDE_JSON:-$HOME/.claude.json}"
+if command -v jq >/dev/null 2>&1 && [ -f "$claude_json" ]; then
+    for server in filesystem github memory sequential-thinking tree-sitter; do
+        jq -e --arg s "$server" '.mcpServers[$s]' "$claude_json" >/dev/null 2>&1 ||
+            fail "missing claude mcp server: $server (run setup-claude-mcp)"
+    done
+    ok "claude mcp servers configured"
+else
+    printf 'skip: jq or ~/.claude.json not available\n'
+fi

@@ -38,8 +38,14 @@ home add .config/kitty/kitty.conf     # добавить файл
 home commit -m "update kitty"         # закоммитить
 check-config                          # быстрые syntax/runtime проверки
 sync-config                           # ff-only pull, push origin, push SMB, doctor
-config-doctor                         # проверить fish/nvim/starship/kitty/repo mirror
+config-doctor                         # проверить fish/nvim/starship/kitty/repo mirror/claude MCP
+setup-claude-mcp                      # (пере)накатить MCP-серверы в ~/.claude.json
 ```
+
+`setup-claude-mcp` вызывается автоматически при `bootstrap.sh`, но идемпотентен — можно
+перезапускать вручную, чтобы добавить новые серверы или починить локальный `~/.claude.json`.
+`~/.claude.json` не трекается (там же токены/сессии/кэш Claude Code), поэтому серверы туда
+подмешиваются скриптом, а не хранятся в git.
 
 `lazy-lock.json` не трекается: каждая ОС держит свои версии плагинов локально.
 Правила repo: `docs/policy.md`.

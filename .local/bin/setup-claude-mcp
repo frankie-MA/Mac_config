@@ -1,0 +1,53 @@
+#!/bin/sh
+
+set -eu
+
+need() {
+    command -v "$1" >/dev/null 2>&1 || {
+        printf 'missing command: %s\n' "$1" >&2
+        exit 1
+    }
+}
+
+need jq
+
+claude_json="${CLAUDE_JSON:-$HOME/.claude.json}"
+
+[ -f "$claude_json" ] || printf '{}' > "$claude_json"
+
+# ${HOME} / ${GITHUB_TOKEN} below are Claude Code's own MCP config expansion
+# syntax (resolved when the server starts), not shell variables -- keep them
+# literal in the JSON.
+servers='{
+  "filesystem": {
+    "command": "npx",
+    "args": ["-y", "@modelcontextprotocol/server-filesystem", "${HOME}"]
+  },
+  "github": {
+    "command": "npx",
+    "args": ["-y", "@modelcontextprotocol/server-github"],
+    "env": {"GITHUB_TOKEN": "${GITHUB_TOKEN}"}
+  },
+  "memory": {
+    "command": "npx",
+    "args": ["-y", "@modelcontextprotocol/server-memory"]
+  },
+  "sequential-thinking": {
+    "command": "npx",
+    "args": ["-y", "@modelcontextprotocol/server-sequential-thinking"]
+  },
+  "tree-sitter": {
+    "command": "uvx",
+    "args": ["mcp-server-tree-sitter"]
+  }
+}'
+
+if [ "$(uname)" = "Darwin" ] && command -v brew >/dev/null 2>&1; then
+    servers=$(printf '%s' "$servers" | jq '. + {homebrew: {command: "brew", args: ["mcp-server"]}}')
+fi
+
+tmp="$(mktemp "$claude_json.XXXXXX")"
+jq --argjson servers "$servers" '.mcpServers = ((.mcpServers // {}) + $servers)' "$claude_json" > "$tmp"
+mv "$tmp" "$claude_json"
+
+printf 'ok: claude mcp servers configured\n'

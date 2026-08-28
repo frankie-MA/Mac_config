@@ -4,7 +4,7 @@
 
 ```bash
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-brew install fish kitty neovim starship zoxide lazygit atuin bat eza fzf mise lua node gh tree-sitter stylua
+brew install fish kitty neovim starship zoxide lazygit atuin bat eza fzf mise lua node gh tree-sitter stylua jq
 curl -LsSf https://astral.sh/uv/install.sh | sh
 uv tool install ruff
 npm install -g prettier tree-sitter-cli
@@ -15,7 +15,7 @@ chsh -s /opt/homebrew/bin/fish
 ## Arch/Omarchy
 
 ```bash
-sudo pacman -S fish kitty neovim starship zoxide lazygit atuin bat eza fzf mise lua nodejs npm github-cli tree-sitter-cli stylua
+sudo pacman -S fish kitty neovim starship zoxide lazygit atuin bat eza fzf mise lua nodejs npm github-cli tree-sitter-cli stylua jq
 curl -LsSf https://astral.sh/uv/install.sh | sh
 uv tool install ruff
 npm install -g prettier tree-sitter-cli
