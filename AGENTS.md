@@ -146,7 +146,17 @@ it needs sudo and a real password, so it is not run by `bootstrap.sh`.
   first access and unmounts after 10 minutes idle — no login script, no
   polling, same philosophy as the macOS LaunchAgent. Override host/share/
   mount point/credentials path via `SMB_CONFIG_HOST` / `SMB_CONFIG_SHARE` /
-  `SMB_CONFIG_MOUNT_POINT` / `SMB_CONFIG_CREDS`.
+  `SMB_CONFIG_MOUNT_POINT` / `SMB_CONFIG_CREDS`. The script reads
+  `${SUDO_UID:-$(id -u)}` / `${SUDO_GID:-$(id -g)}` so it mounts with the
+  real (non-root) user's ownership whether it's run directly (it calls
+  `sudo` itself per privileged step) or as `sudo ./setup-...sh` (the whole
+  thing as root) — get this wrong and the mount ends up `uid=0,gid=0`,
+  unwritable by the normal user and rejected by git as "dubious
+  ownership" (hit this for real once; fixed by editing the installed
+  `.mount` unit's `Options=` line, `daemon-reload`, `umount`, restart the
+  `.automount` unit). If a `~/.config/gtk-3.0/bookmarks` file already
+  exists (Nautilus/Nemo/Thunar), the script also adds a bookmark there so
+  the mirror shows up in the file manager's sidebar.
 - Missing/unmounted SMB is not an error: it's an optional secondary push
   target, everything still works against `origin` alone
   (`skip: SMB mirror not mounted or not configured`).

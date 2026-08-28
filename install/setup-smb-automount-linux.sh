@@ -24,8 +24,8 @@ smb_host="${SMB_CONFIG_HOST:-192.168.88.254}"
 smb_share="${SMB_CONFIG_SHARE:-homes}"
 smb_user="${SMB_CONFIG_USER:-frankie}"
 creds_file="${SMB_CONFIG_CREDS:-/etc/samba/credentials-katecloud}"
-uid="$(id -u)"
-gid="$(id -g)"
+uid="${SUDO_UID:-$(id -u)}"
+gid="${SUDO_GID:-$(id -g)}"
 
 sudo mkdir -p "$mount_point"
 sudo mkdir -p "$(dirname "$creds_file")"
@@ -74,3 +74,14 @@ printf 'ok: %s will automount on first access and unmount after 10 min idle\n' "
 printf 'If the password above is still CHANGE_ME, edit %s then run:\n' "$creds_file"
 printf '  sudo systemctl restart %s.automount\n' "$unit_base"
 printf 'Test it with: ls %s\n' "$mount_point"
+
+# If a GTK bookmarks file already exists (Nautilus/Nemo/Thunar-family file
+# managers use it for the sidebar), add a bookmark so the mirror shows up
+# there too -- only if the user already has GTK app config, never created
+# from scratch just for this.
+bookmarks="$HOME/.config/gtk-3.0/bookmarks"
+if [ -f "$bookmarks" ]; then
+    line="file://$mount_point kateCloud"
+    grep -qxF "$line" "$bookmarks" || printf '%s\n' "$line" >> "$bookmarks"
+    printf 'ok: added %s to %s (Nautilus/Nemo/Thunar sidebar)\n' "$mount_point" "$bookmarks"
+fi
