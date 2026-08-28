@@ -95,8 +95,6 @@ launchctl kickstart -k "gui/$(id -u)/com.mafrankie.config-smb"
 │       ├── options.lua    # настройки vim
 │       ├── keymaps.lua    # глобальные биндинги
 │       └── plugins/       # плагины (по одному файлу на плагин)
-└── claude/
-    └── settings.json     # MCP серверы для Claude Code
 ~/.gitconfig               # git user.name / user.email
 ```
 
