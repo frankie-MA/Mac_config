@@ -2,17 +2,34 @@
 
 set -eu
 
-mount_point="${SMB_CONFIG_MOUNT_POINT:-/Volumes/homes}"
-smb_url="${SMB_CONFIG_URL:-smb://frankie@kateCloud._smb._tcp.local/homes}"
+case "$(uname -s)" in
+    Darwin)
+        mount_point="${SMB_CONFIG_MOUNT_POINT:-/Volumes/homes}"
+        smb_url="${SMB_CONFIG_URL:-smb://frankie@kateCloud._smb._tcp.local/homes}"
 
-[ "$(uname -s)" = Darwin ] || exit 0
+        if /sbin/mount | /usr/bin/grep -Fq " on $mount_point (smbfs"; then
+            exit 0
+        fi
 
-if /sbin/mount | /usr/bin/grep -Fq " on $mount_point (smbfs"; then
-    exit 0
-fi
-
-/usr/bin/osascript - "$smb_url" <<'APPLESCRIPT'
+        /usr/bin/osascript - "$smb_url" <<'APPLESCRIPT'
 on run argv
     mount volume (item 1 of argv)
 end run
 APPLESCRIPT
+        ;;
+    Linux)
+        # No login-time trigger needed here: install/setup-smb-automount-linux.sh
+        # sets up a systemd .automount unit that mounts on first filesystem
+        # access. A bare stat is enough to trigger it if it isn't mounted yet.
+        mount_point="${SMB_CONFIG_MOUNT_POINT:-/mnt/katecloud/homes}"
+        [ -d "$mount_point" ] 2>/dev/null || true
+        if mount | grep -Fq " on $mount_point "; then
+            exit 0
+        fi
+        printf 'not mounted: %s (run install/setup-smb-automount-linux.sh once to set up automount)\n' "$mount_point" >&2
+        exit 1
+        ;;
+    *)
+        exit 0
+        ;;
+esac

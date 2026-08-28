@@ -72,6 +72,27 @@ launchctl kickstart -k "gui/$(id -u)/com.mafrankie.config-smb"
 каталог среди `/Volumes/homes` и `/mnt/katecloud/homes`. Нестандартное зеркало
 можно задать через `SMB_CONFIG_REMOTE`.
 
+### Автомонтирование SMB на Linux
+
+Однократно (нужен sudo и реальный пароль от шары):
+
+```sh
+./install/setup-smb-automount-linux.sh
+```
+
+Скрипт создаёт пару systemd-юнитов `.mount`/`.automount` на `/mnt/katecloud/homes`
+(адрес `192.168.88.254`, шара `homes` — переопределяются через `SMB_CONFIG_HOST` /
+`SMB_CONFIG_SHARE` / `SMB_CONFIG_MOUNT_POINT`) и файл с учётными данными
+`/etc/samba/credentials-katecloud` (root-only, 600, не трекается в git — аналог
+Keychain на macOS). При первом запуске пароль там будет заглушкой `CHANGE_ME`,
+скрипт подскажет команду для правки.
+
+Монтирование ленивое: юнит `.automount` цепляет CIFS-шару при первом обращении к
+пути (даже просто `stat`/`ls`) и отмонтирует через 10 минут простоя — как и на
+macOS, без периодического опроса в фоне. `sync-config`/`config-doctor`/
+`bootstrap.sh` сами трогают точку монтирования перед проверкой, так что
+автомонт срабатывает прозрачно при обычной работе.
+
 ### Правило для проверок
 
 Каталог `~/.local/bin` может содержать и скрипты, и бинарные программы. Поэтому

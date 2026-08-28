@@ -12,6 +12,7 @@ detect_smb_remote() {
     fi
 
     for mount_point in ${SMB_CONFIG_MOUNT_POINT:+"$SMB_CONFIG_MOUNT_POINT"} /Volumes/homes /mnt/katecloud/homes; do
+        [ -d "$mount_point" ] 2>/dev/null || true
         if mount | grep -Fq " on $mount_point "; then
             printf '%s/repo/git/config.git\n' "$mount_point"
             return

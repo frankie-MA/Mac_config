@@ -13,6 +13,7 @@ detect_smb_remote() {
     fi
 
     for mount_point in ${SMB_CONFIG_MOUNT_POINT:+"$SMB_CONFIG_MOUNT_POINT"} /Volumes/homes /mnt/katecloud/homes; do
+        [ -d "$mount_point" ] 2>/dev/null || true
         if mount | grep -Fq " on $mount_point "; then
             printf '%s/repo/git/config.git\n' "$mount_point"
             return
@@ -47,7 +48,7 @@ install_base_packages() {
             ;;
         Linux)
             if command -v pacman >/dev/null 2>&1; then
-                sudo pacman -S --needed fish kitty neovim starship zoxide lazygit atuin bat eza fzf mise lua nodejs npm github-cli tree-sitter-cli stylua jq
+                sudo pacman -S --needed fish kitty neovim starship zoxide lazygit atuin bat eza fzf mise lua nodejs npm github-cli tree-sitter-cli stylua jq cifs-utils
             else
                 printf 'Unsupported Linux package manager. Install packages manually.\n' >&2
                 exit 1
