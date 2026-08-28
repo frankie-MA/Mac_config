@@ -78,9 +78,28 @@ ensure_fish_shell() {
     fi
 }
 
+backup_preexisting_app_configs() {
+    stamp="$(date +%Y%m%d-%H%M%S)"
+    backup="$HOME/.config-backup/$stamp-preexisting"
+
+    for parent in .config .local; do
+        git --git-dir="$home_git" ls-tree --name-only "HEAD:$parent" 2>/dev/null |
+            while IFS= read -r child; do
+                path="$parent/$child"
+                [ -e "$HOME/$path" ] || continue
+                [ -L "$HOME/$path" ] && continue
+                mkdir -p "$backup/$parent"
+                mv "$HOME/$path" "$backup/$path"
+                printf 'Pre-existing %s moved to %s\n' "$path" "$backup"
+            done
+    done
+}
+
 checkout_dotfiles() {
+    fresh_clone=0
     if [ ! -d "$home_git" ]; then
         git clone --bare "$repo_url" "$home_git"
+        fresh_clone=1
     fi
 
     git --git-dir="$home_git" config status.showUntrackedFiles no
@@ -88,6 +107,16 @@ checkout_dotfiles() {
 
     if [ -n "$smb_remote" ] && [ -d "$smb_remote" ] && ! git --git-dir="$home_git" remote get-url smb >/dev/null 2>&1; then
         git --git-dir="$home_git" remote add smb "$smb_remote"
+    fi
+
+    # A fresh OS (e.g. Omarchy) can preinstall a full app config directory
+    # (e.g. ~/.config/nvim as a LazyVim scaffold) whose file paths don't
+    # collide with anything this repo tracks. Plain `git checkout` only
+    # backs up files it detects as conflicting by exact path, so it would
+    # silently leave that preinstalled tree mixed in alongside the tracked
+    # one. Move any whole app directory this repo owns out of the way first.
+    if [ "$fresh_clone" -eq 1 ]; then
+        backup_preexisting_app_configs
     fi
 
     if ! git --work-tree="$HOME" --git-dir="$home_git" checkout; then
