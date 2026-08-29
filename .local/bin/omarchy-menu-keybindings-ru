@@ -1,0 +1,124 @@
+#!/bin/bash
+
+set -o pipefail
+
+translated_bindings() {
+omarchy menu keybindings --print | awk '
+BEGIN {
+  t["Keybindings"]="Горячие клавиши"; t["Omarchy menu"]="Меню Omarchy"
+  t["Apps menu"]="Меню приложений"; t["System menu"]="Системное меню"
+  t["Theme menu"]="Меню тем"; t["Hardware menu"]="Меню оборудования"
+  t["Capture menu"]="Меню захвата"; t["Power menu"]="Меню питания"
+  t["Terminal"]="Терминал"; t["Browser"]="Браузер"
+  t["Browser (private)"]="Браузер (приватный режим)"
+  t["File manager"]="Файловый менеджер"
+  t["File manager (cwd)"]="Файловый менеджер (текущий каталог)"
+  t["Editor"]="Редактор"; t["Passwords"]="Пароли"
+  t["Full screen"]="Полноэкранный режим"; t["Tiled full screen"]="Полный экран с тайлингом"
+  t["Full width"]="На всю ширину"; t["Close window"]="Закрыть окно"
+  t["Close all windows"]="Закрыть все окна"; t["Lock system"]="Заблокировать систему"
+  t["Toggle window floating/tiling"]="Переключить плавающее/тайлинговое окно"
+  t["Toggle window split"]="Изменить направление разделения окна"
+  t["Pop window out (float & pin)"]="Открепить окно поверх остальных"
+  t["Pseudo window"]="Псевдотайлинговое окно"
+  t["Toggle workspace layout"]="Переключить раскладку рабочего пространства"
+  t["Universal copy"]="Копировать"; t["Universal paste"]="Вставить"; t["Universal cut"]="Вырезать"
+  t["Clipboard manager"]="Буфер обмена"; t["Emojis"]="Эмодзи"
+  t["Color picker"]="Выбор цвета"; t["Screenshot"]="Снимок экрана"; t["Screenrecording"]="Запись экрана"
+  t["Former workspace"]="Прежнее рабочее пространство"
+  t["Previous workspace"]="Предыдущее рабочее пространство"; t["Next workspace"]="Следующее рабочее пространство"
+  t["Swap window down"]="Поменять окно с нижним"; t["Swap window up"]="Поменять окно с верхним"
+  t["Swap window to the left"]="Поменять окно с левым"; t["Swap window to the right"]="Поменять окно с правым"
+  t["Focus on next window"]="Фокус на следующее окно"; t["Focus on previous window"]="Фокус на предыдущее окно"
+  t["Focus on next monitor"]="Фокус на следующий монитор"; t["Focus on previous monitor"]="Фокус на предыдущий монитор"
+  t["Focus on below window"]="Фокус на окно снизу"; t["Focus on above window"]="Фокус на окно сверху"
+  t["Focus on left window"]="Фокус на окно слева"; t["Focus on right window"]="Фокус на окно справа"
+  t["Move window"]="Переместить окно"; t["Resize window"]="Изменить размер окна"
+  t["Move window to scratchpad"]="Переместить окно в scratchpad"; t["Toggle scratchpad"]="Показать/скрыть scratchpad"
+  t["Invoke last notification"]="Открыть последнее уведомление"
+  t["Dismiss last notification"]="Закрыть последнее уведомление"
+  t["Dismiss all notifications"]="Закрыть все уведомления"
+  t["Open notification history"]="Открыть историю уведомлений"
+  t["Toggle silencing notifications"]="Включить/выключить уведомления"
+  t["Toggle window transparency"]="Переключить прозрачность окна"
+  t["Toggle window gaps"]="Переключить отступы между окнами"
+  t["Toggle nightlight"]="Переключить ночной свет"; t["Toggle locking on idle"]="Переключить блокировку при бездействии"
+  t["Start dictation (push-to-talk)"]="Начать диктовку"; t["Stop dictation (push-to-talk)"]="Остановить диктовку"
+  t["Toggle dictation"]="Переключить диктовку"
+  t["Download Video from Web App"]="Скачать видео из веб-приложения"
+  t["Copy URL from Web App"]="Копировать URL из веб-приложения"
+  t["Make webcam overlay smaller"]="Уменьшить окно веб-камеры"; t["Make webcam overlay larger"]="Увеличить окно веб-камеры"
+  t["Save window width"]="Сохранить ширину окна"; t["Restore window width"]="Восстановить ширину окна"
+  t["Monitor scaling down"]="Уменьшить масштаб монитора"; t["Monitor scaling up"]="Увеличить масштаб монитора"
+  t["Audio"]="Звук"; t["Show battery remaining"]="Показать оставшийся заряд"; t["Calendar"]="Календарь"
+  t["Toggle laptop display mirroring"]="Переключить зеркалирование экрана ноутбука"
+  t["Show reminders"]="Показать напоминания"; t["Set reminder"]="Создать напоминание"; t["Clear reminders"]="Очистить напоминания"
+  t["Show time"]="Показать время"; t["Toggle weather"]="Показать/скрыть погоду"
+  t["Reset zoom"]="Сбросить масштаб"; t["Zoom in"]="Увеличить масштаб"
+  t["Toggle single-window square aspect"]="Переключить квадратный вид одного окна"
+  t["Bluetooth"]="Bluetooth"; t["Display"]="Экран"; t["Toggle laptop display"]="Переключить экран ноутбука"
+  t["Toggle menu"]="Меню переключателей"; t["Transcode"]="Перекодировать"; t["Power"]="Питание"
+  t["Extract text (OCR) from screenshot"]="Распознать текст на снимке экрана"
+  t["Calculator"]="Калькулятор"; t["Background switcher"]="Выбор фона"; t["Share"]="Поделиться"
+  t["Activity"]="Системная активность"; t["Network"]="Сеть"
+  t["New email"]="Новое письмо"; t["Email"]="Почта"; t["Music"]="Музыка"; t["Music TUI"]="Музыка в терминале"
+  t["Toggle top bar"]="Показать/скрыть верхнюю панель"
+  t["Move workspace to down monitor"]="Переместить пространство на нижний монитор"
+  t["Move workspace to left monitor"]="Переместить пространство на левый монитор"
+  t["Move workspace to right monitor"]="Переместить пространство на правый монитор"
+  t["Move workspace to up monitor"]="Переместить пространство на верхний монитор"
+  t["Move window to group on bottom"]="Переместить окно в нижнюю группу"
+  t["Move active window out of group"]="Убрать активное окно из группы"
+  t["Move window to group on left"]="Переместить окно в левую группу"
+  t["Move window to group on right"]="Переместить окно в правую группу"
+  t["Move window to group on top"]="Переместить окно в верхнюю группу"
+  t["Next window in group"]="Следующее окно в группе"; t["Previous window in group"]="Предыдущее окно в группе"
+  t["Move grouped window focus left"]="Фокус на левое окно в группе"
+  t["Move grouped window focus right"]="Фокус на правое окно в группе"
+  t["Toggle window grouping"]="Переключить группировку окон"
+  t["Scroll active workspace forward"]="Прокрутить пространства вперёд"
+  t["Scroll active workspace backward"]="Прокрутить пространства назад"
+  t["Reveal active window on top"]="Поднять активное окно наверх"
+  t["Volume down precise"]="Точно уменьшить громкость"; t["Volume up precise"]="Точно увеличить громкость"
+  t["Volume down"]="Уменьшить громкость"; t["Volume up"]="Увеличить громкость"
+  t["Mute"]="Выключить звук"; t["Mute microphone"]="Выключить микрофон"
+  t["Next track"]="Следующий трек"; t["Previous track"]="Предыдущий трек"
+  t["Pause"]="Пауза"; t["Play"]="Воспроизведение"
+  t["Switch audio output"]="Переключить аудиовыход"; t["Switch media source"]="Переключить источник медиа"
+  t["Brightness down precise"]="Точно уменьшить яркость"; t["Brightness up precise"]="Точно увеличить яркость"
+  t["Brightness minimum"]="Минимальная яркость"; t["Brightness maximum"]="Максимальная яркость"
+  t["Brightness down"]="Уменьшить яркость"; t["Brightness up"]="Увеличить яркость"
+  t["Eject media"]="Извлечь носитель"
+  t["Keyboard brightness down"]="Уменьшить подсветку клавиатуры"
+  t["Keyboard brightness up"]="Увеличить подсветку клавиатуры"
+  t["Keyboard backlight cycle"]="Переключить подсветку клавиатуры"
+  t["Disable touchpad"]="Выключить тачпад"; t["Enable touchpad"]="Включить тачпад"; t["Toggle touchpad"]="Переключить тачпад"
+  t["Tmux keybindings"]="Горячие клавиши Tmux"; t["Herdr keybindings"]="Горячие клавиши Herdr"
+}
+function tr(value, number) {
+  if (value in t) return t[value]
+  if (value ~ /^Switch to workspace [0-9]+$/) { number=value; sub(/^Switch to workspace /,"",number); return "Перейти на рабочее пространство " number }
+  if (value ~ /^Move window to workspace [0-9]+$/) { number=value; sub(/^Move window to workspace /,"",number); return "Переместить окно на рабочее пространство " number }
+  if (value ~ /^Move window silently to workspace [0-9]+$/) { number=value; sub(/^Move window silently to workspace /,"",number); return "Переместить окно без перехода на пространство " number }
+  if (value ~ /^Bar panel [0-9]+$/) { number=value; sub(/^Bar panel /,"",number); return "Панель верхней строки " number }
+  if (value ~ /^Switch to group window [0-9]+$/) { number=value; sub(/^Switch to group window /,"",number); return "Перейти на окно группы " number }
+  if (value ~ /^Expand window left/) { sub(/^Expand window left/,"Расширить окно влево",value); sub(/ a little$/," немного",value); sub(/ a lot$/," сильно",value); return value }
+  if (value ~ /^Shrink window left/) { sub(/^Shrink window left/,"Сжать окно слева",value); sub(/ a little$/," немного",value); sub(/ a lot$/," сильно",value); return value }
+  if (value ~ /^Expand window down/) { sub(/^Expand window down/,"Расширить окно вниз",value); sub(/ a little$/," немного",value); sub(/ a lot$/," сильно",value); return value }
+  if (value ~ /^Shrink window up/) { sub(/^Shrink window up/,"Сжать окно сверху",value); sub(/ a little$/," немного",value); sub(/ a lot$/," сильно",value); return value }
+  return value
+}
+{
+  separator=index($0,"→"); if (!separator) next
+  keys=substr($0,1,separator-1); description=substr($0,separator+1)
+  sub(/[[:space:]]+$/,"",keys); sub(/^[[:space:]]+/,"",description)
+  printf "%-35s → %s\n", keys, tr(description)
+}
+'
+}
+
+if [[ $1 == "--print" ]]; then
+  translated_bindings
+else
+  translated_bindings | omarchy-menu-select 'Горячие клавиши — русская шпаргалка' -- --width 1000 --height 650 >/dev/null
+fi
