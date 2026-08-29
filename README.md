@@ -15,6 +15,8 @@ cd ~/config-bootstrap
 ./install/bootstrap.sh --packages
 ```
 
+Настройка GitHub SSH для Bash, Zsh и Fish: [короткая инструкция](docs/github-ssh.md).
+
 После перезапуска shell проверь состояние:
 
 ```bash
