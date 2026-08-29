@@ -59,7 +59,9 @@ style = "bold yellow"
 # Mise
 # ──────────────────────────────────────────────
 [mise]
-disabled = false
+# Tool versions are already shown by their language modules. Keeping this
+# disabled also prevents prompt rendering from waiting on mise/network checks.
+disabled = true
 symbol = "mise "
 format = "[$symbol$health]($style) "
 style = "bold purple"
