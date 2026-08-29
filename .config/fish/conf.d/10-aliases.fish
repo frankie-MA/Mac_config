@@ -16,6 +16,7 @@ if status is-interactive
     abbr -a vf 'nvim ~/.config/fish/config.fish'
     abbr -a vk 'nvim ~/.config/kitty/kitty.conf'
     abbr -a vs 'nvim ~/.config/starship.toml'
+    abbr -a vd dotfiles
     abbr -a sf 'source ~/.config/fish/config.fish'
 
     if type -q eza
