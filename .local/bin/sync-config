@@ -34,6 +34,19 @@ home() {
     git --git-dir="$home_git" --work-tree="$home_work_tree" "$@"
 }
 
+# Some tools rewrite these on their own after checkout/first run (see
+# AGENTS.md "background auto-injected diffs"). Flag them instead of letting
+# a real edit and installer noise look the same in the refusal output.
+hint_noisy_paths() {
+    home diff --name-only "$@" | while IFS= read -r path; do
+        case "$path" in
+            .profile|.zshrc|.config/opencode/opencode.json|.config/zed/settings.json)
+                printf '  hint: %s is a known background-auto-injected path (see AGENTS.md) -- check the diff, or `home checkout -- %s` to discard\n' "$path" "$path" >&2
+                ;;
+        esac
+    done
+}
+
 test -d "$home_git" || {
     printf 'missing bare repo: %s\n' "$home_git" >&2
     exit 1
@@ -42,12 +55,14 @@ test -d "$home_git" || {
 home diff --quiet || {
     printf 'refusing to sync: unstaged home changes exist\n' >&2
     home status --short
+    hint_noisy_paths
     exit 1
 }
 
 home diff --cached --quiet || {
     printf 'refusing to sync: staged home changes exist\n' >&2
     home status --short
+    hint_noisy_paths --cached
     exit 1
 }
 

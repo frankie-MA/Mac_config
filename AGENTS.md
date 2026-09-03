@@ -47,6 +47,13 @@ nothing useful, and a follow-up `commit` then fails with a confusing
 a relative pathspec, or use absolute paths. This has actually bitten a
 previous session doing this exact kind of maintenance — don't repeat it.
 
+The fish `home` function (`~/.config/fish/functions/home.fish`, not a plain
+alias) now guards this for interactive use: `home add`/`mv`/`rm` refuse
+loudly with an error instead of silently no-op'ing when `$PWD != $HOME`.
+Scripts that build the git invocation directly (`sync-config`,
+`config-doctor`, `bootstrap.sh`) are unaffected by cwd either way since they
+always pass `--git-dir`/`--work-tree` explicitly with their own pathspecs.
+
 ## Commands (tracked in `.local/bin/`, expected on `$PATH`)
 
 - **`check-config`** — fast syntax/runtime sanity checks: POSIX shell
@@ -197,3 +204,11 @@ Before treating a `home status` diff as something to commit, check whether
 it's actually an intentional edit or one of these auto-injected artifacts;
 if it's noise, `home checkout -- <path>` to drop it rather than committing
 it.
+
+`sync-config` and `config-doctor` both flag this automatically now: when
+either refuses to proceed because the work tree isn't clean, it prints a
+`hint:` line for any dirty path matching this known list
+(`.profile`, `.zshrc`, `.config/opencode/opencode.json`,
+`.config/zed/settings.json`) pointing back here, so the noise doesn't have
+to be recognized from memory every time. New auto-injecting tools still
+need to be added to that list by hand (in both scripts) when discovered.

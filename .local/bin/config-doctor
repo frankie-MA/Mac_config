@@ -56,9 +56,28 @@ test -f "$HOME/.config/kitty/catppuccin-current.conf" || fail "missing kitty cat
 test -x "$HOME/.config/kitty/switch-catppuccin" || fail "switch-catppuccin is not executable"
 ok "kitty files"
 
+# Some tools rewrite tracked files on their own after checkout/first run
+# (see AGENTS.md "background auto-injected diffs"). Flag known paths
+# instead of letting a real edit and installer noise look the same.
+hint_noisy_paths() {
+    git --git-dir="$home_git" --work-tree="$home_work_tree" diff --name-only "$@" | while IFS= read -r path; do
+        case "$path" in
+            .profile|.zshrc|.config/opencode/opencode.json|.config/zed/settings.json)
+                printf '  hint: %s is a known background-auto-injected path (see AGENTS.md) -- check the diff, or `home checkout -- %s` to discard\n' "$path" "$path" >&2
+                ;;
+        esac
+    done
+}
+
 test -d "$home_git" || fail "missing bare repo: $home_git"
-git --git-dir="$home_git" --work-tree="$home_work_tree" diff --quiet || fail "home work tree has unstaged changes"
-git --git-dir="$home_git" --work-tree="$home_work_tree" diff --cached --quiet || fail "home index has staged changes"
+if ! git --git-dir="$home_git" --work-tree="$home_work_tree" diff --quiet; then
+    hint_noisy_paths
+    fail "home work tree has unstaged changes"
+fi
+if ! git --git-dir="$home_git" --work-tree="$home_work_tree" diff --cached --quiet; then
+    hint_noisy_paths --cached
+    fail "home index has staged changes"
+fi
 ok "home work tree clean"
 
 head_ref=$(git --git-dir="$home_git" rev-parse HEAD)
