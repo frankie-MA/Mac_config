@@ -2,3 +2,4 @@
 .config/fish/conf.d/99-local.fish
 .config/kitty/local.conf
 .config/nvim/lua/local.lua
+.ssh/config.local
