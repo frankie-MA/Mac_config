@@ -62,6 +62,10 @@ return {
             { "<leader>vs", desc = "Select venv" },
             { "<leader>vc", desc = "Use cached venv" },
 
+            -- Markdown
+            { "<leader>m",  group = "markdown" },
+            { "<leader>mp", desc = "Toggle preview" },
+
             -- Терминал
             { "<leader>t",  group = "terminal" },
             { "<leader>tt", desc = "Toggle bottom terminal", mode = { "n", "t" } },
