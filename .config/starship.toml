@@ -13,11 +13,8 @@ $status\
 $character"""
 
 right_format = """
-$mise\
 $python\
 $nodejs\
-$java\
-$docker_context\
 $cmd_duration"""
 
 # ──────────────────────────────────────────────
@@ -77,7 +74,7 @@ format = 'via [${symbol}${pyenv_prefix}(${version} )(\($virtualenv\) )]($style)'
 style = "bold yellow"
 detect_files = ["pyproject.toml", "requirements.txt", ".python-version", "uv.lock"]
 detect_extensions = ["py"]
-python_binary = ["uv run python", "python3", "python"]
+python_binary = [["uv", "run", "--no-python-downloads", "--no-project", "python"], "python3", "python"]
 
 # ──────────────────────────────────────────────
 # Node.js / mise
@@ -93,17 +90,23 @@ detect_folders = []
 
 # ──────────────────────────────────────────────
 # Java / mise
+# Not in right_format: Java isn't installed on this machine, so the
+# module can never render anyway. Re-add to right_format if that changes.
 # ──────────────────────────────────────────────
 [java]
-disabled = false
+disabled = true
 symbol = "java "
 format = "via [$symbol$version]($style) "
 style = "bold red"
 
 # ──────────────────────────────────────────────
 # Docker (показывать только рядом с docker-compose.yml)
+# Not in right_format: the docker CLI isn't installed on this machine,
+# so the module can never render anyway. Re-add to right_format if that
+# changes.
 # ──────────────────────────────────────────────
 [docker_context]
+disabled = true
 symbol = " "
 style = "bold blue"
 format = "via [$symbol$context]($style) "
