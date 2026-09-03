@@ -39,5 +39,6 @@ done
 fish -n "$repo/.config/fish/config.fish" "$repo"/.config/fish/conf.d/*.fish
 nvim --headless '+qa' >/dev/null 2>&1
 starship print-config >/dev/null
+"$repo/tests/mount-config-smb.sh"
 
 printf 'ok: config checks passed\n'

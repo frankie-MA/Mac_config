@@ -6,8 +6,17 @@ case "$(uname -s)" in
     Darwin)
         mount_point="${SMB_CONFIG_MOUNT_POINT:-/Volumes/homes}"
         smb_url="${SMB_CONFIG_URL:-smb://frankie@kateCloud._smb._tcp.local/homes}"
+        smb_host="${SMB_CONFIG_HOST:-192.168.88.254}"
+        smb_port="${SMB_CONFIG_PORT:-445}"
+        connect_timeout="${SMB_CONFIG_CONNECT_TIMEOUT:-2}"
 
         if /sbin/mount | /usr/bin/grep -Fq " on $mount_point (smbfs"; then
+            exit 0
+        fi
+
+        # Being away from the home network is normal. Avoid asking Finder to
+        # mount an unreachable share, as that produces a recurring GUI dialog.
+        if ! /usr/bin/nc -G "$connect_timeout" -z "$smb_host" "$smb_port" >/dev/null 2>&1; then
             exit 0
         fi
 
