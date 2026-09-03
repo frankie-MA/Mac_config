@@ -118,11 +118,21 @@ it needs sudo and a real password, so it is not run by `bootstrap.sh`.
 
 ## SMB mirror (kateCloud)
 
-- Real host: SMB share, LAN IP `192.168.88.254`, mDNS name `kateCloud`
-  (`smb://frankie@kateCloud._smb._tcp.local/homes`). The mDNS `.local` name
-  needs Bonjour/Avahi to resolve — on a Linux box without Avahi (a fresh
-  Omarchy install may not have it), the scripts below use the raw IP
-  instead.
+- Real host: SMB share, LAN IP `192.168.88.254`, mDNS name `kateCloud`. Both
+  `mount-config-smb` (macOS) and the Linux automount unit mount by raw IP
+  (`smb://frankie@192.168.88.254/homes`), not the mDNS `.local` name —
+  confirmed on 2026-09-04 that `kateCloud._smb._tcp.local` (a Bonjour
+  DNS-SD service-instance name, not a plain hostname) can hang or fail to
+  resolve for tens of seconds even while the IP:445 is reachable and a
+  direct-IP mount succeeds in under a second. Originally this was only
+  worked around for Linux boxes without Avahi; turned out macOS's own
+  Bonjour resolution of it is unreliable too, and a probe-vs-mount address
+  mismatch (nc-checking the IP but `mount volume`-ing the mDNS name) was
+  producing recurring "problem connecting to the server kateCloud" GUI
+  dialogs despite the reachability precheck passing. Override the host via
+  `SMB_CONFIG_HOST`, the share name via `SMB_CONFIG_SHARE` (default
+  `homes`), or the full URL via `SMB_CONFIG_URL` if a nonstandard mount is
+  ever needed.
 - Detection in `sync-config` / `config-doctor` / `bootstrap.sh` is
   mount-based: `detect_smb_remote()` touches the candidate mount point
   (`[ -d "$mount_point" ]` — a bare stat, which is enough to trigger a

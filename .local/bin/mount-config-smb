@@ -5,8 +5,15 @@ set -eu
 case "$(uname -s)" in
     Darwin)
         mount_point="${SMB_CONFIG_MOUNT_POINT:-/Volumes/homes}"
-        smb_url="${SMB_CONFIG_URL:-smb://frankie@kateCloud._smb._tcp.local/homes}"
         smb_host="${SMB_CONFIG_HOST:-192.168.88.254}"
+        smb_share="${SMB_CONFIG_SHARE:-homes}"
+        # Mount by the same address the reachability probe below checks
+        # (raw IP), not a Bonjour/DNS-SD service-instance name
+        # (kateCloud._smb._tcp.local) -- that mDNS form can hang or fail to
+        # resolve even when the IP:port is reachable, which produced a
+        # "problem connecting to the server" dialog despite a clean nc
+        # check. Same reasoning already applied on the Linux side below.
+        smb_url="${SMB_CONFIG_URL:-smb://frankie@${smb_host}/${smb_share}}"
         smb_port="${SMB_CONFIG_PORT:-445}"
         connect_timeout="${SMB_CONFIG_CONNECT_TIMEOUT:-2}"
 
