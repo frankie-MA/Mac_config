@@ -2,6 +2,13 @@
 
 add_newline = true
 
+# Safety net: mise-shimmed tools ($python module's uv/python3 fallback) can
+# occasionally exceed the 500ms default under cold disk cache or system
+# load. Root cause (uv/python having no active mise pin, forcing a PATH
+# scan fallback on every shim invocation) was fixed via `mise use -g`, but
+# this stays as defense-in-depth against transient spikes from any module.
+command_timeout = 1000
+
 # Порядок модулей в промпте
 format = """
 $directory\
